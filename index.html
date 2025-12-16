@@ -11,7 +11,7 @@
             --secondary: #1a1a2e;
             --accent: #ff4d6d;
             --dark-bg: #0c0c15;
-            --card-bg: rgba(30, 30, 46, 0.8);
+            --card-bg: rgba(30, 30, 46, 0.95); /* Less transparent to reduce blur effect */
             --text: #ffffff;
             --text-secondary: #b8b8d1;
             --gradient: linear-gradient(135deg, #0c0c15 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
@@ -81,12 +81,11 @@
             50% { transform: translateY(-20px); }
         }
         
-        /* Header Styles */
+        /* Header Styles - REMOVED BACKDROP FILTER */
         header {
             padding: 25px 0;
             border-bottom: 1px solid rgba(138, 43, 226, 0.3);
-            background-color: rgba(12, 12, 21, 0.85);
-            backdrop-filter: blur(10px);
+            background-color: rgba(12, 12, 21, 0.95); /* Solid background */
             position: sticky;
             top: 0;
             z-index: 100;
@@ -135,7 +134,7 @@
             flex: 1;
         }
         
-        /* Player Section */
+        /* Player Section - REMOVED BACKDROP FILTER */
         .player-section {
             background-color: var(--card-bg);
             border-radius: 20px;
@@ -144,7 +143,6 @@
             border: 1px solid rgba(138, 43, 226, 0.2);
             transition: transform 0.3s, box-shadow 0.3s;
             animation: slideUp 1s ease;
-            backdrop-filter: blur(5px);
         }
         
         .player-section:hover {
@@ -338,7 +336,7 @@
             box-shadow: 0 0 20px var(--primary), 0 0 40px rgba(138, 43, 226, 0.7);
         }
         
-        /* Playlist Section */
+        /* Playlist Section - REMOVED BACKDROP FILTER */
         .playlist-section {
             background-color: var(--card-bg);
             border-radius: 20px;
@@ -346,7 +344,6 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(138, 43, 226, 0.2);
             animation: slideUp 1s ease 0.2s both;
-            backdrop-filter: blur(5px);
         }
         
         .playlist-header {
@@ -471,15 +468,14 @@
             font-size: 0.9rem;
         }
         
-        /* Footer */
+        /* Footer - REMOVED BACKDROP FILTER */
         footer {
             text-align: center;
             padding: 25px 0;
             border-top: 1px solid rgba(138, 43, 226, 0.3);
             color: var(--text-secondary);
             font-size: 0.9rem;
-            background-color: rgba(12, 12, 21, 0.85);
-            backdrop-filter: blur(10px);
+            background-color: rgba(12, 12, 21, 0.95);
         }
         
         footer p {
@@ -805,7 +801,7 @@
     </footer>
     
     <script>
-        // Music Configuration - Using your provided music files
+        // Music Configuration - Updated with your music list
         const musicFiles = [
             {
                 title: "ACELERADA",
@@ -816,50 +812,50 @@
             },
             {
                 title: "CONFESS YOUR LOVE FUNK",
-                artist: "Dxrk",
+                artist: "ZMAJOR",
                 src: "Musics/CONFESS YOUR LOVE FUNK - ZMAJOR, -Prey - SoundLoadMate.com.mp3",
-                duration: "2:49",
-                cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                duration: "1:19",
+                cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6QDjYkmjGVMiF496ls_iauWCs6SlXWc9ZMQ&s"
             },
             {
-                title: "METAMORPHOSIS",
-                artist: "INTERWORLD",
-                src: "Musics/metamorphosis.mp3",
-                duration: "2:43",
+                title: "VAI VAI TRAIR",
+                artist: "DJ Asul",
+                src: "Musics/DJ Asul - VAI VAI TRAIR.mp3",
+                duration: "1:30",
                 cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
             },
             {
-                title: "RAVE",
-                artist: "Dxrk",
-                src: "Musics/rave.mp3",
+                title: "MONTAGEM DIREÇÃO",
+                artist: "DJ FKU, farofinat beats, Dj Samir",
+                src: "Musics/MONTAGEM DIREÇÃO - DJ FKU, farofinat beats, Dj Samir - SoundLoadMate.com.mp3",
                 duration: "2:49",
                 cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
             },
             {
-                title: "SHADOW",
+                title: "MONTAGEM RUGADA",
                 artist: "ONIMXRU",
-                src: "Musics/shadow.mp3",
+                src: "Musics/MONTAGEM RUGADA.mp3",
                 duration: "2:55",
                 cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
             },
             {
-                title: "GHOST!",
-                artist: "KIIXSHI",
-                src: "Musics/ghost.mp3",
+                title: "Montagem Miau",
+                artist: "Lenar",
+                src: "Musics/Montagem Miau (Slowed) - Lenar - SoundLoadMate.com.mp3",
                 duration: "2:25",
                 cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
             },
             {
-                title: "WHY NOT",
+                title: "Montagem Supersonic",
                 artist: "GHOSTFACE PLUGG",
-                src: "Musics/why_not.mp3",
+                src: "Musics/Montagem Supersonic.mp3",
                 duration: "3:12",
                 cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
             },
             {
-                title: "SLAUGHTER HOUSE",
-                artist: "Kordhell",
-                src: "Musics/slaughter_house.mp3",
+                title: "1-800",
+                artist: "bbno$, Ironmouse",
+                src: "Musics/bbno$, Ironmouse - 1800.mp3",
                 duration: "2:31",
                 cover: "https://images.unsplash.com/photo-1519281682544-5f37c5bc6a82?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
             }
@@ -1491,12 +1487,9 @@
             brightness = brightnessSlider.value / 100;
             
             // Reinitialize particles if density changed
-            if (particleDensity !== (particleSlider.value / 100)) {
-                initParticles();
-            }
+            initParticles();
         }
         
-        // [REST OF THE PLAYER FUNCTIONS REMAIN THE SAME AS BEFORE...]
         // Initialize player with first track
         function loadTrack(index) {
             const track = musicFiles[index];
