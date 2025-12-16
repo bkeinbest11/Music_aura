@@ -998,16 +998,17 @@
         
         // Visualizer animation loop
         // Visualizer animation loop
+        // Visualizer animation loop
         function animateVisualizer() {
             requestAnimationFrame(animateVisualizer);
             
+            // ALWAYS clear the canvas completely at the start of each frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
             if (visualizerType === 'off' || !isPlaying) {
-                // Clear canvas completely when paused or off
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Still draw particles when paused but faded
+                // When paused or off, just draw faded particles
                 if (particles.length > 0) {
-                    drawParticles(0.3); // Low intensity when paused
+                    drawParticles(0.1); // Very low intensity when paused
                 }
                 return;
             }
@@ -1018,7 +1019,7 @@
                 
                 // Calculate bass frequency with sensitivity adjustment
                 bassFrequency = 0;
-                const bassRange = Math.floor(40 * sensitivity); // Adjust range based on sensitivity
+                const bassRange = Math.floor(40 * sensitivity);
                 for (let i = 0; i < bassRange; i++) {
                     bassFrequency += dataArray[i];
                 }
@@ -1040,8 +1041,14 @@
                 // Exponential scaling for more dramatic effect
                 normalizedBass = Math.pow(normalizedBass, 1.5);
                 
-                // IMPORTANT: Clear canvas COMPLETELY (no grey overlay)
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Draw a very subtle background gradient for depth (OPTIONAL - remove if you want completely clear)
+                if (brightness > 0.5) {
+                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    gradient.addColorStop(0, `rgba(12, 12, 21, 0.01)`);
+                    gradient.addColorStop(1, `rgba(12, 12, 21, 0.03)`);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
                 
                 // Draw based on visualizer type
                 switch(visualizerType) {
@@ -1072,95 +1079,6 @@
                 }
             }
         }
-            
-            // Draw wave ripples
-            function drawWaveRipples(bassIntensity) {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                if (bassIntensity > 0.2) {
-                    const hue = 280 + Math.random() * 60;
-                    waveRipples.push({
-                        x: centerX + (Math.random() - 0.5) * 100,
-                        y: centerY + (Math.random() - 0.5) * 100,
-                        radius: 30,
-                        growthRate: 2 + bassIntensity * 10,
-                        opacity: 0.8,
-                        hue: hue,
-                        lineWidth: 2 + bassIntensity * 3
-                    });
-                    
-                    if (waveRipples.length > 25) {
-                        waveRipples.shift();
-                    }
-                }
-                
-                for (let i = 0; i < waveRipples.length; i++) {
-                    const ripple = waveRipples[i];
-                    
-                    ripple.radius += ripple.growthRate;
-                    ripple.opacity -= 0.015;
-                    
-                    if (ripple.opacity <= 0) {
-                        waveRipples.splice(i, 1);
-                        i--;
-                        continue;
-                    }
-                    
-                    ctx.beginPath();
-                    ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-                    ctx.strokeStyle = `hsla(${ripple.hue}, 100%, 70%, ${ripple.opacity})`;
-                    ctx.lineWidth = ripple.lineWidth;
-                    ctx.stroke();
-                }
-            }
-            
-            // Draw pulse rings
-            function drawPulseRings(bassIntensity) {
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                if (bassIntensity > 0.15) {
-                    const hue = 280 + bassIntensity * 60;
-                    pulseRings.push({
-                        x: centerX,
-                        y: centerY,
-                        radius: 20,
-                        maxRadius: 50 + bassIntensity * 300,
-                        growthRate: 3 + bassIntensity * 8,
-                        opacity: 0.9,
-                        hue: hue,
-                        width: 2 + bassIntensity * 6
-                    });
-                    
-                    if (pulseRings.length > 15) {
-                        pulseRings.shift();
-                    }
-                }
-                
-                for (let i = 0; i < pulseRings.length; i++) {
-                    const ring = pulseRings[i];
-                    
-                    ring.radius += ring.growthRate;
-                    ring.opacity -= 0.02;
-                    
-                    if (ring.radius > ring.maxRadius || ring.opacity <= 0) {
-                        pulseRings.splice(i, 1);
-                        i--;
-                        continue;
-                    }
-                    
-                    ctx.beginPath();
-                    ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
-                    ctx.strokeStyle = `hsla(${ring.hue}, 100%, 70%, ${ring.opacity})`;
-                    ctx.lineWidth = ring.width;
-                    
-                    ctx.shadowColor = `hsl(${ring.hue}, 100%, 70%)`;
-                    ctx.shadowBlur = 30;
-                    ctx.stroke();
-                    ctx.shadowBlur = 0;
-                }
-            }
             
             // NEW: Draw particle system
             function drawParticles(bassIntensity) {
