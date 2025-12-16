@@ -997,13 +997,13 @@
         }
         
         // Visualizer animation loop
+        // Visualizer animation loop
         function animateVisualizer() {
             requestAnimationFrame(animateVisualizer);
             
             if (visualizerType === 'off' || !isPlaying) {
-                // Clear canvas with slight transparency for fade effect
-                ctx.fillStyle = 'rgba(12, 12, 21, 0.1)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Clear canvas completely when paused or off
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
                 // Still draw particles when paused but faded
                 if (particles.length > 0) {
@@ -1040,9 +1040,8 @@
                 // Exponential scaling for more dramatic effect
                 normalizedBass = Math.pow(normalizedBass, 1.5);
                 
-                // Clear canvas with trail effect
-                ctx.fillStyle = `rgba(12, 12, 21, ${0.1 / brightness})`;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // IMPORTANT: Clear canvas COMPLETELY (no grey overlay)
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
                 // Draw based on visualizer type
                 switch(visualizerType) {
@@ -1073,197 +1072,142 @@
                 }
             }
         }
-        
-        // Draw the bass-reactive ball
-        function drawBassBall(bassIntensity) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
             
-            const baseSize = 80 * brightness;
-            const pulseSize = baseSize * (1 + bassIntensity * 1.5);
-            
-            // Core glow
-            const gradient = ctx.createRadialGradient(
-                centerX, centerY, 0,
-                centerX, centerY, pulseSize
-            );
-            
-            const hue = 280 + bassIntensity * 80;
-            gradient.addColorStop(0, `hsla(${hue}, 100%, 80%, 0.9)`);
-            gradient.addColorStop(0.5, `hsla(${hue}, 100%, 70%, 0.6)`);
-            gradient.addColorStop(1, `hsla(${hue}, 100%, 60%, 0.1)`);
-            
-            // Main ball
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, pulseSize, 0, Math.PI * 2);
-            ctx.fillStyle = gradient;
-            ctx.fill();
-            
-            // Glow effect
-            ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-            ctx.shadowBlur = 50 * brightness;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, pulseSize * 0.8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            // Wave rings on bass hits
-            if (bassIntensity > 0.3) {
-                const ringCount = Math.floor(bassIntensity * 5);
+            // Draw wave ripples
+            function drawWaveRipples(bassIntensity) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
                 
-                for (let i = 0; i < ringCount; i++) {
-                    const ringSize = pulseSize + 20 + i * 60;
-                    const ringOpacity = 0.4 - (i * 0.1);
+                if (bassIntensity > 0.2) {
+                    const hue = 280 + Math.random() * 60;
+                    waveRipples.push({
+                        x: centerX + (Math.random() - 0.5) * 100,
+                        y: centerY + (Math.random() - 0.5) * 100,
+                        radius: 30,
+                        growthRate: 2 + bassIntensity * 10,
+                        opacity: 0.8,
+                        hue: hue,
+                        lineWidth: 2 + bassIntensity * 3
+                    });
+                    
+                    if (waveRipples.length > 25) {
+                        waveRipples.shift();
+                    }
+                }
+                
+                for (let i = 0; i < waveRipples.length; i++) {
+                    const ripple = waveRipples[i];
+                    
+                    ripple.radius += ripple.growthRate;
+                    ripple.opacity -= 0.015;
+                    
+                    if (ripple.opacity <= 0) {
+                        waveRipples.splice(i, 1);
+                        i--;
+                        continue;
+                    }
                     
                     ctx.beginPath();
-                    ctx.arc(centerX, centerY, ringSize, 0, Math.PI * 2);
-                    ctx.strokeStyle = `hsla(${hue}, 100%, 80%, ${ringOpacity})`;
-                    ctx.lineWidth = 3;
+                    ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `hsla(${ripple.hue}, 100%, 70%, ${ripple.opacity})`;
+                    ctx.lineWidth = ripple.lineWidth;
                     ctx.stroke();
                 }
-                
-                // Particle burst on strong bass
-                if (bassIntensity > 0.8) {
-                    createParticleBurst(centerX, centerY, bassIntensity, hue);
-                }
-            }
-        }
-        
-        // Draw wave ripples
-        function drawWaveRipples(bassIntensity) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            if (bassIntensity > 0.2) {
-                const hue = 280 + Math.random() * 60;
-                waveRipples.push({
-                    x: centerX + (Math.random() - 0.5) * 100,
-                    y: centerY + (Math.random() - 0.5) * 100,
-                    radius: 30,
-                    growthRate: 2 + bassIntensity * 10,
-                    opacity: 0.8,
-                    hue: hue,
-                    lineWidth: 2 + bassIntensity * 3
-                });
-                
-                if (waveRipples.length > 25) {
-                    waveRipples.shift();
-                }
             }
             
-            for (let i = 0; i < waveRipples.length; i++) {
-                const ripple = waveRipples[i];
+            // Draw pulse rings
+            function drawPulseRings(bassIntensity) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
                 
-                ripple.radius += ripple.growthRate;
-                ripple.opacity -= 0.015;
-                
-                if (ripple.opacity <= 0) {
-                    waveRipples.splice(i, 1);
-                    i--;
-                    continue;
-                }
-                
-                ctx.beginPath();
-                ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `hsla(${ripple.hue}, 100%, 70%, ${ripple.opacity})`;
-                ctx.lineWidth = ripple.lineWidth;
-                ctx.stroke();
-            }
-        }
-        
-        // Draw pulse rings
-        function drawPulseRings(bassIntensity) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            if (bassIntensity > 0.15) {
-                const hue = 280 + bassIntensity * 60;
-                pulseRings.push({
-                    x: centerX,
-                    y: centerY,
-                    radius: 20,
-                    maxRadius: 50 + bassIntensity * 300,
-                    growthRate: 3 + bassIntensity * 8,
-                    opacity: 0.9,
-                    hue: hue,
-                    width: 2 + bassIntensity * 6
-                });
-                
-                if (pulseRings.length > 15) {
-                    pulseRings.shift();
-                }
-            }
-            
-            for (let i = 0; i < pulseRings.length; i++) {
-                const ring = pulseRings[i];
-                
-                ring.radius += ring.growthRate;
-                ring.opacity -= 0.02;
-                
-                if (ring.radius > ring.maxRadius || ring.opacity <= 0) {
-                    pulseRings.splice(i, 1);
-                    i--;
-                    continue;
-                }
-                
-                ctx.beginPath();
-                ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `hsla(${ring.hue}, 100%, 70%, ${ring.opacity})`;
-                ctx.lineWidth = ring.width;
-                
-                ctx.shadowColor = `hsl(${ring.hue}, 100%, 70%)`;
-                ctx.shadowBlur = 30;
-                ctx.stroke();
-                ctx.shadowBlur = 0;
-            }
-        }
-        
-        // NEW: Draw particle system
-        function drawParticles(bassIntensity) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // Update and draw particles
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                
-                if (p.orbit) {
-                    // Orbiting particles
-                    p.orbitAngle += p.orbitSpeed * (1 + bassIntensity * 0.5);
-                    p.x = centerX + Math.cos(p.orbitAngle) * p.orbitRadius;
-                    p.y = centerY + Math.sin(p.orbitAngle) * p.orbitRadius;
+                if (bassIntensity > 0.15) {
+                    const hue = 280 + bassIntensity * 60;
+                    pulseRings.push({
+                        x: centerX,
+                        y: centerY,
+                        radius: 20,
+                        maxRadius: 50 + bassIntensity * 300,
+                        growthRate: 3 + bassIntensity * 8,
+                        opacity: 0.9,
+                        hue: hue,
+                        width: 2 + bassIntensity * 6
+                    });
                     
-                    // React to bass
-                    p.orbitRadius += Math.sin(Date.now() * 0.001 + i) * bassIntensity * 2;
-                } else {
-                    // Floating particles with bass reaction
-                    p.x += p.speedX * (1 + bassIntensity * 0.1);
-                    p.y += p.speedY * (1 + bassIntensity * 0.1);
-                    
-                    // Bounce off walls
-                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-                    
-                    // Keep in bounds
-                    p.x = Math.max(0, Math.min(canvas.width, p.x));
-                    p.y = Math.max(0, Math.min(canvas.height, p.y));
+                    if (pulseRings.length > 15) {
+                        pulseRings.shift();
+                    }
                 }
                 
-                // Draw particle
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * (1 + bassIntensity * 0.3), 0, Math.PI * 2);
-                ctx.fillStyle = p.color.replace(')', `, ${p.opacity * (0.5 + bassIntensity * 0.5)})`);
-                ctx.fill();
-                
-                // Glow effect on strong bass
-                if (bassIntensity > 0.5) {
-                    ctx.shadowColor = p.color;
-                    ctx.shadowBlur = 10 * bassIntensity;
-                    ctx.fill();
+                for (let i = 0; i < pulseRings.length; i++) {
+                    const ring = pulseRings[i];
+                    
+                    ring.radius += ring.growthRate;
+                    ring.opacity -= 0.02;
+                    
+                    if (ring.radius > ring.maxRadius || ring.opacity <= 0) {
+                        pulseRings.splice(i, 1);
+                        i--;
+                        continue;
+                    }
+                    
+                    ctx.beginPath();
+                    ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `hsla(${ring.hue}, 100%, 70%, ${ring.opacity})`;
+                    ctx.lineWidth = ring.width;
+                    
+                    ctx.shadowColor = `hsl(${ring.hue}, 100%, 70%)`;
+                    ctx.shadowBlur = 30;
+                    ctx.stroke();
                     ctx.shadowBlur = 0;
                 }
             }
-        }
+            
+            // NEW: Draw particle system
+            function drawParticles(bassIntensity) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                
+                // Update and draw particles
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    
+                    if (p.orbit) {
+                        // Orbiting particles
+                        p.orbitAngle += p.orbitSpeed * (1 + bassIntensity * 0.5);
+                        p.x = centerX + Math.cos(p.orbitAngle) * p.orbitRadius;
+                        p.y = centerY + Math.sin(p.orbitAngle) * p.orbitRadius;
+                        
+                        // React to bass
+                        p.orbitRadius += Math.sin(Date.now() * 0.001 + i) * bassIntensity * 2;
+                    } else {
+                        // Floating particles with bass reaction
+                        p.x += p.speedX * (1 + bassIntensity * 0.1);
+                        p.y += p.speedY * (1 + bassIntensity * 0.1);
+                        
+                        // Bounce off walls
+                        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                        
+                        // Keep in bounds
+                        p.x = Math.max(0, Math.min(canvas.width, p.x));
+                        p.y = Math.max(0, Math.min(canvas.height, p.y));
+                    }
+                    
+                    // Draw particle
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * (1 + bassIntensity * 0.3), 0, Math.PI * 2);
+                    ctx.fillStyle = p.color.replace(')', `, ${p.opacity * (0.5 + bassIntensity * 0.5)})`);
+                    ctx.fill();
+                    
+                    // Glow effect on strong bass
+                    if (bassIntensity > 0.5) {
+                        ctx.shadowColor = p.color;
+                        ctx.shadowBlur = 10 * bassIntensity;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+            }
         
         // NEW: Particle storm visualizer
         function drawParticleStorm(bassIntensity) {
