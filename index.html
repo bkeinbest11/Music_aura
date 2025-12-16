@@ -1000,6 +1000,7 @@
         // Visualizer animation loop
         // Visualizer animation loop
         function animateVisualizer() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             requestAnimationFrame(animateVisualizer);
             
             // ALWAYS clear the canvas completely at the start of each frame
