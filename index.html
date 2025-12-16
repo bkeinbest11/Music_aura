@@ -49,6 +49,36 @@
             padding: 0 20px;
             position: relative;
             z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* EXTRA SPACE AT BOTTOM */
+        .extra-space {
+            height: 400px; /* Added extra space for visualizer viewing */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            margin-top: 50px;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .extra-space i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
         
         /* Header Styles */
@@ -102,6 +132,7 @@
             flex-direction: column;
             gap: 40px;
             padding: 40px 0;
+            flex: 1;
         }
         
         /* Player Section */
@@ -447,7 +478,6 @@
             border-top: 1px solid rgba(138, 43, 226, 0.3);
             color: var(--text-secondary);
             font-size: 0.9rem;
-            margin-top: 30px;
             background-color: rgba(12, 12, 21, 0.85);
             backdrop-filter: blur(10px);
         }
@@ -478,6 +508,7 @@
         .visualizer-controls {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 15px;
             margin-top: 20px;
             padding: 15px;
@@ -504,6 +535,44 @@
         .viz-btn.active {
             background: var(--primary);
             box-shadow: var(--neon-glow);
+        }
+        
+        /* NEW: Visualizer Settings Panel */
+        .viz-settings {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+        
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .setting-slider {
+            width: 100px;
+            -webkit-appearance: none;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .setting-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
         }
         
         /* Animations */
@@ -595,6 +664,16 @@
                 height: 60px;
                 font-size: 1.5rem;
             }
+            
+            .extra-space {
+                height: 300px;
+                font-size: 1rem;
+            }
+            
+            .visualizer-controls, .viz-settings {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -631,11 +710,11 @@
                 <div class="player-controls">
                     <div class="track-info">
                         <div class="album-art">
-                            <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Album Art">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzaaLQQ5KytCtPk-_jhwUcp8t0d2QT-15hnC3dz0oEB-hVS0WCQaxQ&usqp=CAE&s" alt="Album Art">
                         </div>
                         <div class="track-details">
-                            <h3 id="currentTrackTitle">METAMORPHOSIS</h3>
-                            <p id="currentTrackArtist">INTERWORLD</p>
+                            <h3 id="currentTrackTitle">ACELERADA</h3>
+                            <p id="currentTrackArtist">MXZI, sma$her</p>
                             <div class="progress-area">
                                 <div class="progress-bar" id="progressBar">
                                     <div class="progress" id="progress"></div>
@@ -665,7 +744,25 @@
                         <button class="viz-btn active" id="vizBall">Bass Ball</button>
                         <button class="viz-btn" id="vizWaves">Wave Ripples</button>
                         <button class="viz-btn" id="vizPulse">Pulse Rings</button>
+                        <button class="viz-btn" id="vizParticles">Particle Storm</button>
+                        <button class="viz-btn" id="vizLights">Light Show</button>
                         <button class="viz-btn" id="vizOff">Visualizer Off</button>
+                    </div>
+                    
+                    <!-- NEW: Visualizer Settings -->
+                    <div class="viz-settings">
+                        <div class="setting-group">
+                            <span>Sensitivity:</span>
+                            <input type="range" min="50" max="200" value="100" class="setting-slider" id="sensitivitySlider">
+                        </div>
+                        <div class="setting-group">
+                            <span>Particles:</span>
+                            <input type="range" min="0" max="200" value="100" class="setting-slider" id="particleSlider">
+                        </div>
+                        <div class="setting-group">
+                            <span>Brightness:</span>
+                            <input type="range" min="20" max="200" value="100" class="setting-slider" id="brightnessSlider">
+                        </div>
                     </div>
                 </div>
             </section>
@@ -684,12 +781,19 @@
                     <!-- Playlist items will be generated by JavaScript -->
                 </div>
             </section>
+            
+            <!-- EXTRA SPACE FOR VISUALIZER VIEWING -->
+            <div class="extra-space">
+                <i class="fas fa-arrow-down"></i>
+                <p>Scroll down to see the full visualizer effects</p>
+                <p>Bass-reactive particles and lighting effects activated below</p>
+            </div>
         </div>
     </main>
     
     <footer>
         <div class="container">
-            <p>PHONK GYM &copy; 2025 | Power Your Workout with Intense Beats</p>
+            <p>PHONK GYM &copy; 2023 | Power Your Workout with Intense Beats</p>
             <p>All music files are stored in the "Musics" directory as MP3 files</p>
             <div class="social-icons">
                 <a href="#"><i class="fab fa-github"></i></a>
@@ -701,7 +805,7 @@
     </footer>
     
     <script>
-        // Music Configuration
+        // Music Configuration - Using your provided music files
         const musicFiles = [
             {
                 title: "ACELERADA",
@@ -709,6 +813,20 @@
                 src: "Musics/ACELERADA.mp3",
                 duration: "1:03",
                 cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzaaLQQ5KytCtPk-_jhwUcp8t0d2QT-15hnC3dz0oEB-hVS0WCQaxQ&usqp=CAE&s"
+            },
+            {
+                title: "CONFESS YOUR LOVE FUNK",
+                artist: "Dxrk",
+                src: "Musics/CONFESS YOUR LOVE FUNK - ZMAJOR, -Prey - SoundLoadMate.com.mp3",
+                duration: "2:49",
+                cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                title: "METAMORPHOSIS",
+                artist: "INTERWORLD",
+                src: "Musics/metamorphosis.mp3",
+                duration: "2:43",
+                cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
             },
             {
                 title: "RAVE",
@@ -744,20 +862,6 @@
                 src: "Musics/slaughter_house.mp3",
                 duration: "2:31",
                 cover: "https://images.unsplash.com/photo-1519281682544-5f37c5bc6a82?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-            },
-            {
-                title: "NEON BLADE",
-                artist: "MoonDeity",
-                src: "Musics/neon_blade.mp3",
-                duration: "3:05",
-                cover: "https://images.unsplash.com/photo-1517230878791-4d28214057c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-            },
-            {
-                title: "SEARCH & RESCUE",
-                artist: "Drake",
-                src: "Musics/search_rescue.mp3",
-                duration: "4:32",
-                cover: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
             }
         ];
         
@@ -785,14 +889,21 @@
         const vizBallBtn = document.getElementById('vizBall');
         const vizWavesBtn = document.getElementById('vizWaves');
         const vizPulseBtn = document.getElementById('vizPulse');
+        const vizParticlesBtn = document.getElementById('vizParticles');
+        const vizLightsBtn = document.getElementById('vizLights');
         const vizOffBtn = document.getElementById('vizOff');
+        
+        // Settings Sliders
+        const sensitivitySlider = document.getElementById('sensitivitySlider');
+        const particleSlider = document.getElementById('particleSlider');
+        const brightnessSlider = document.getElementById('brightnessSlider');
         
         // Player state
         let currentTrackIndex = 0;
         let isPlaying = false;
         
         // Visualizer state
-        let visualizerType = 'ball'; // 'ball', 'waves', 'pulse', 'off'
+        let visualizerType = 'ball';
         let audioContext;
         let analyser;
         let dataArray;
@@ -800,6 +911,19 @@
         let bassHistory = [];
         let waveRipples = [];
         let pulseRings = [];
+        
+        // NEW: Particle system
+        let particles = [];
+        const PARTICLE_COUNT = 150; // Base number of particles
+        
+        // NEW: Lighting effects
+        let lightPoints = [];
+        let lightStreaks = [];
+        
+        // Settings
+        let sensitivity = 1.0;
+        let particleDensity = 1.0;
+        let brightness = 1.0;
         
         // Set canvas size
         function resizeCanvas() {
@@ -816,7 +940,8 @@
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioContext.createAnalyser();
-                analyser.fftSize = 256;
+                analyser.fftSize = 512; // Increased for more detailed analysis
+                analyser.smoothingTimeConstant = 0.8;
                 const source = audioContext.createMediaElementSource(audioPlayer);
                 source.connect(analyser);
                 analyser.connect(audioContext.destination);
@@ -824,8 +949,55 @@
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
             }
             
+            // Initialize particles
+            initParticles();
+            
+            // Initialize lights
+            initLights();
+            
             // Start animation loop
             animateVisualizer();
+        }
+        
+        // Initialize particle system
+        function initParticles() {
+            particles = [];
+            const count = PARTICLE_COUNT * particleDensity;
+            
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 3 + 1,
+                    speedX: (Math.random() - 0.5) * 2,
+                    speedY: (Math.random() - 0.5) * 2,
+                    color: `hsl(${Math.random() * 60 + 280}, 100%, 70%)`,
+                    opacity: Math.random() * 0.7 + 0.3,
+                    orbit: Math.random() > 0.7, // Some particles orbit
+                    orbitRadius: Math.random() * 100 + 50,
+                    orbitSpeed: (Math.random() - 0.5) * 0.05,
+                    orbitAngle: Math.random() * Math.PI * 2
+                });
+            }
+        }
+        
+        // Initialize lighting effects
+        function initLights() {
+            lightPoints = [];
+            lightStreaks = [];
+            
+            // Create light points
+            for (let i = 0; i < 8; i++) {
+                lightPoints.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 40 + 20,
+                    intensity: Math.random() * 0.5 + 0.3,
+                    color: `hsl(${Math.random() * 60 + 280}, 100%, 70%)`,
+                    pulseSpeed: Math.random() * 0.02 + 0.01,
+                    pulsePhase: Math.random() * Math.PI * 2
+                });
+            }
         }
         
         // Visualizer animation loop
@@ -836,6 +1008,11 @@
                 // Clear canvas with slight transparency for fade effect
                 ctx.fillStyle = 'rgba(12, 12, 21, 0.1)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Still draw particles when paused but faded
+                if (particles.length > 0) {
+                    drawParticles(0.3); // Low intensity when paused
+                }
                 return;
             }
             
@@ -843,40 +1020,60 @@
             if (analyser) {
                 analyser.getByteFrequencyData(dataArray);
                 
-                // Calculate bass frequency (lower frequencies)
+                // Calculate bass frequency with sensitivity adjustment
                 bassFrequency = 0;
-                for (let i = 0; i < 15; i++) {
+                const bassRange = Math.floor(40 * sensitivity); // Adjust range based on sensitivity
+                for (let i = 0; i < bassRange; i++) {
                     bassFrequency += dataArray[i];
                 }
-                bassFrequency /= 20;
+                bassFrequency /= bassRange;
                 
                 // Add to history for smoothing
                 bassHistory.push(bassFrequency);
-                if (bassHistory.length > 10) {
+                if (bassHistory.length > 8) {
                     bassHistory.shift();
                 }
                 
                 // Calculate average bass for smoother animation
                 let avgBass = bassHistory.reduce((a, b) => a + b, 0) / bassHistory.length;
                 
-                // Normalize bass value (0-1 range)
-                let normalizedBass = Math.min(avgBass / 128, 1.5);
+                // Apply sensitivity and brightness settings
+                let normalizedBass = Math.min(avgBass / (100 / sensitivity), 3.0);
+                normalizedBass *= brightness;
                 
-                // Clear canvas with slight transparency for trail effect
-                ctx.fillStyle = 'rgba(12, 12, 21, 0.15)';
+                // Exponential scaling for more dramatic effect
+                normalizedBass = Math.pow(normalizedBass, 1.5);
+                
+                // Clear canvas with trail effect
+                ctx.fillStyle = `rgba(12, 12, 21, ${0.1 / brightness})`;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
                 // Draw based on visualizer type
                 switch(visualizerType) {
                     case 'ball':
                         drawBassBall(normalizedBass);
+                        drawParticles(normalizedBass);
                         break;
                     case 'waves':
                         drawWaveRipples(normalizedBass);
+                        drawParticles(normalizedBass);
                         break;
                     case 'pulse':
                         drawPulseRings(normalizedBass);
+                        drawParticles(normalizedBass);
                         break;
+                    case 'particles':
+                        drawParticleStorm(normalizedBass);
+                        break;
+                    case 'lights':
+                        drawLightShow(normalizedBass);
+                        drawParticles(normalizedBass * 0.5);
+                        break;
+                }
+                
+                // Always draw some particles in the background
+                if (visualizerType !== 'particles') {
+                    drawParticles(normalizedBass * 0.3);
                 }
             }
         }
@@ -886,68 +1083,52 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             
-            // Base size with bass reactivity
-            const baseSize = 100;
-            const pulseSize = baseSize * (1 + bassIntensity * 0.8);
+            const baseSize = 80 * brightness;
+            const pulseSize = baseSize * (1 + bassIntensity * 1.5);
             
-            // Create gradient for the ball
+            // Core glow
             const gradient = ctx.createRadialGradient(
                 centerX, centerY, 0,
                 centerX, centerY, pulseSize
             );
             
-            // Colors change with bass intensity
-            const hue = 280 + bassIntensity * 40; // Purple to pink
-            const mainColor = `hsl(${hue}, 100%, 60%)`;
-            const outerColor = `hsla(${hue}, 100%, 40%, 0.3)`;
+            const hue = 280 + bassIntensity * 80;
+            gradient.addColorStop(0, `hsla(${hue}, 100%, 80%, 0.9)`);
+            gradient.addColorStop(0.5, `hsla(${hue}, 100%, 70%, 0.6)`);
+            gradient.addColorStop(1, `hsla(${hue}, 100%, 60%, 0.1)`);
             
-            gradient.addColorStop(0, mainColor);
-            gradient.addColorStop(0.7, `hsla(${hue}, 100%, 50%, 0.7)`);
-            gradient.addColorStop(1, outerColor);
-            
-            // Draw main ball
+            // Main ball
             ctx.beginPath();
             ctx.arc(centerX, centerY, pulseSize, 0, Math.PI * 2);
             ctx.fillStyle = gradient;
             ctx.fill();
             
-            // Add glow effect
-            ctx.shadowColor = mainColor;
-            ctx.shadowBlur = 30 + bassIntensity * 50;
+            // Glow effect
+            ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
+            ctx.shadowBlur = 50 * brightness;
             ctx.beginPath();
-            ctx.arc(centerX, centerY, pulseSize * 0.9, 0, Math.PI * 2);
+            ctx.arc(centerX, centerY, pulseSize * 0.8, 0, Math.PI * 2);
             ctx.fill();
             ctx.shadowBlur = 0;
             
-            // Create wave rings on strong bass hits
-            if (bassIntensity > 0.7) {
-                const waveCount = 3 + Math.floor(bassIntensity * 3);
+            // Wave rings on bass hits
+            if (bassIntensity > 0.3) {
+                const ringCount = Math.floor(bassIntensity * 5);
                 
-                for (let i = 0; i < waveCount; i++) {
-                    const waveSize = pulseSize + 20 + i * 40;
-                    const waveOpacity = 0.3 - (i * 0.1);
+                for (let i = 0; i < ringCount; i++) {
+                    const ringSize = pulseSize + 20 + i * 60;
+                    const ringOpacity = 0.4 - (i * 0.1);
                     
                     ctx.beginPath();
-                    ctx.arc(centerX, centerY, waveSize, 0, Math.PI * 2);
-                    ctx.strokeStyle = `hsla(${hue}, 100%, 70%, ${waveOpacity})`;
-                    ctx.lineWidth = 2;
+                    ctx.arc(centerX, centerY, ringSize, 0, Math.PI * 2);
+                    ctx.strokeStyle = `hsla(${hue}, 100%, 80%, ${ringOpacity})`;
+                    ctx.lineWidth = 3;
                     ctx.stroke();
                 }
                 
-                // Add particle effects on strong bass
-                if (bassIntensity > 1.0) {
-                    for (let i = 0; i < 5; i++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const distance = pulseSize + 30;
-                        const particleX = centerX + Math.cos(angle) * distance;
-                        const particleY = centerY + Math.sin(angle) * distance;
-                        const particleSize = 3 + Math.random() * 5;
-                        
-                        ctx.beginPath();
-                        ctx.arc(particleX, particleY, particleSize, 0, Math.PI * 2);
-                        ctx.fillStyle = `hsla(${hue}, 100%, 70%, 0.8)`;
-                        ctx.fill();
-                    }
+                // Particle burst on strong bass
+                if (bassIntensity > 0.8) {
+                    createParticleBurst(centerX, centerY, bassIntensity, hue);
                 }
             }
         }
@@ -957,29 +1138,28 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             
-            // Create new ripple on bass hit
-            if (bassIntensity > 0.5) {
+            if (bassIntensity > 0.2) {
+                const hue = 280 + Math.random() * 60;
                 waveRipples.push({
-                    x: centerX,
-                    y: centerY,
-                    radius: 50,
-                    growthRate: 3 + bassIntensity * 5,
-                    opacity: 0.7,
-                    color: `hsl(${280 + bassIntensity * 40}, 100%, 60%)`
+                    x: centerX + (Math.random() - 0.5) * 100,
+                    y: centerY + (Math.random() - 0.5) * 100,
+                    radius: 30,
+                    growthRate: 2 + bassIntensity * 10,
+                    opacity: 0.8,
+                    hue: hue,
+                    lineWidth: 2 + bassIntensity * 3
                 });
                 
-                // Limit number of ripples
-                if (waveRipples.length > 15) {
+                if (waveRipples.length > 25) {
                     waveRipples.shift();
                 }
             }
             
-            // Draw and update all ripples
             for (let i = 0; i < waveRipples.length; i++) {
                 const ripple = waveRipples[i];
                 
                 ripple.radius += ripple.growthRate;
-                ripple.opacity -= 0.02;
+                ripple.opacity -= 0.015;
                 
                 if (ripple.opacity <= 0) {
                     waveRipples.splice(i, 1);
@@ -989,15 +1169,8 @@
                 
                 ctx.beginPath();
                 ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `hsla(280, 100%, 70%, ${ripple.opacity})`;
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                // Inner wave
-                ctx.beginPath();
-                ctx.arc(ripple.x, ripple.y, ripple.radius - 10, 0, Math.PI * 2);
-                ctx.strokeStyle = `hsla(280, 100%, 80%, ${ripple.opacity * 0.7})`;
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = `hsla(${ripple.hue}, 100%, 70%, ${ripple.opacity})`;
+                ctx.lineWidth = ripple.lineWidth;
                 ctx.stroke();
             }
         }
@@ -1007,31 +1180,29 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             
-            // Create new ring on bass hit
-            if (bassIntensity > 0.4) {
+            if (bassIntensity > 0.15) {
+                const hue = 280 + bassIntensity * 60;
                 pulseRings.push({
                     x: centerX,
                     y: centerY,
-                    radius: 30,
-                    maxRadius: 100 + bassIntensity * 200,
-                    growthRate: 2 + bassIntensity * 3,
-                    opacity: 0.8,
-                    color: `hsl(${280 + bassIntensity * 40}, 100%, 60%)`,
-                    width: 3 + bassIntensity * 5
+                    radius: 20,
+                    maxRadius: 50 + bassIntensity * 300,
+                    growthRate: 3 + bassIntensity * 8,
+                    opacity: 0.9,
+                    hue: hue,
+                    width: 2 + bassIntensity * 6
                 });
                 
-                // Limit number of rings
-                if (pulseRings.length > 10) {
+                if (pulseRings.length > 15) {
                     pulseRings.shift();
                 }
             }
             
-            // Draw and update all rings
             for (let i = 0; i < pulseRings.length; i++) {
                 const ring = pulseRings[i];
                 
                 ring.radius += ring.growthRate;
-                ring.opacity -= 0.03;
+                ring.opacity -= 0.02;
                 
                 if (ring.radius > ring.maxRadius || ring.opacity <= 0) {
                     pulseRings.splice(i, 1);
@@ -1041,15 +1212,239 @@
                 
                 ctx.beginPath();
                 ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `hsla(280, 100%, 70%, ${ring.opacity})`;
+                ctx.strokeStyle = `hsla(${ring.hue}, 100%, 70%, ${ring.opacity})`;
                 ctx.lineWidth = ring.width;
+                
+                ctx.shadowColor = `hsl(${ring.hue}, 100%, 70%)`;
+                ctx.shadowBlur = 30;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+        }
+        
+        // NEW: Draw particle system
+        function drawParticles(bassIntensity) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Update and draw particles
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                
+                if (p.orbit) {
+                    // Orbiting particles
+                    p.orbitAngle += p.orbitSpeed * (1 + bassIntensity * 0.5);
+                    p.x = centerX + Math.cos(p.orbitAngle) * p.orbitRadius;
+                    p.y = centerY + Math.sin(p.orbitAngle) * p.orbitRadius;
+                    
+                    // React to bass
+                    p.orbitRadius += Math.sin(Date.now() * 0.001 + i) * bassIntensity * 2;
+                } else {
+                    // Floating particles with bass reaction
+                    p.x += p.speedX * (1 + bassIntensity * 0.1);
+                    p.y += p.speedY * (1 + bassIntensity * 0.1);
+                    
+                    // Bounce off walls
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                    
+                    // Keep in bounds
+                    p.x = Math.max(0, Math.min(canvas.width, p.x));
+                    p.y = Math.max(0, Math.min(canvas.height, p.y));
+                }
+                
+                // Draw particle
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * (1 + bassIntensity * 0.3), 0, Math.PI * 2);
+                ctx.fillStyle = p.color.replace(')', `, ${p.opacity * (0.5 + bassIntensity * 0.5)})`);
+                ctx.fill();
+                
+                // Glow effect on strong bass
+                if (bassIntensity > 0.5) {
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 10 * bassIntensity;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+        
+        // NEW: Particle storm visualizer
+        function drawParticleStorm(bassIntensity) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Create new particles on bass hits
+            if (bassIntensity > 0.3) {
+                const newParticles = Math.floor(bassIntensity * 20);
+                for (let i = 0; i < newParticles; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 2 + Math.random() * 5 + bassIntensity * 10;
+                    const hue = 280 + Math.random() * 60;
+                    
+                    particles.push({
+                        x: centerX,
+                        y: centerY,
+                        size: Math.random() * 4 + 1,
+                        speedX: Math.cos(angle) * speed,
+                        speedY: Math.sin(angle) * speed,
+                        color: `hsl(${hue}, 100%, 70%)`,
+                        opacity: 0.8,
+                        orbit: false,
+                        life: 100 + Math.random() * 100
+                    });
+                }
+            }
+            
+            // Update and draw all particles
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                
+                p.x += p.speedX;
+                p.y += p.speedY;
+                
+                if (p.life) {
+                    p.life--;
+                    p.opacity = p.life / 200;
+                    
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                        i--;
+                        continue;
+                    }
+                }
+                
+                // Gravity toward center
+                const dx = centerX - p.x;
+                const dy = centerY - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const force = 0.1 * bassIntensity;
+                
+                p.speedX += (dx / dist) * force;
+                p.speedY += (dy / dist) * force;
+                
+                // Draw with size based on bass
+                const size = p.size * (1 + bassIntensity * 0.5);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color.replace(')', `, ${p.opacity})`);
+                ctx.fill();
+                
+                // Trail effect
+                ctx.beginPath();
+                ctx.arc(p.x - p.speedX, p.y - p.speedY, size * 0.7, 0, Math.PI * 2);
+                ctx.fillStyle = p.color.replace(')', `, ${p.opacity * 0.3})`);
+                ctx.fill();
+            }
+            
+            // Limit particles
+            if (particles.length > 500 * particleDensity) {
+                particles.splice(0, particles.length - 400 * particleDensity);
+            }
+        }
+        
+        // NEW: Create particle burst
+        function createParticleBurst(x, y, intensity, hue) {
+            const burstCount = Math.floor(intensity * 30);
+            
+            for (let i = 0; i < burstCount; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 5 + intensity * 8;
+                const particleHue = hue + (Math.random() * 40 - 20);
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    size: Math.random() * 3 + 1,
+                    speedX: Math.cos(angle) * speed,
+                    speedY: Math.sin(angle) * speed,
+                    color: `hsl(${particleHue}, 100%, 70%)`,
+                    opacity: 0.9,
+                    orbit: false,
+                    life: 50 + Math.random() * 100
+                });
+            }
+        }
+        
+        // NEW: Light show visualizer
+        function drawLightShow(bassIntensity) {
+            // Update light points
+            for (let i = 0; i < lightPoints.length; i++) {
+                const light = lightPoints[i];
+                
+                // Pulsate with music
+                light.pulsePhase += light.pulseSpeed;
+                const pulse = Math.sin(light.pulsePhase) * 0.5 + 0.5;
+                const currentIntensity = light.intensity * (1 + bassIntensity * pulse);
+                
+                // Draw light glow
+                const gradient = ctx.createRadialGradient(
+                    light.x, light.y, 0,
+                    light.x, light.y, light.radius * (1 + bassIntensity)
+                );
+                
+                gradient.addColorStop(0, `${light.color.replace(')', `, ${currentIntensity * 0.8})`)}`);
+                gradient.addColorStop(0.5, `${light.color.replace(')', `, ${currentIntensity * 0.3})`)}`);
+                gradient.addColorStop(1, `${light.color.replace(')', `, 0)`)}`);
+                
+                ctx.beginPath();
+                ctx.arc(light.x, light.y, light.radius * (1 + bassIntensity * 0.5), 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Create light streaks on strong bass
+                if (bassIntensity > 0.6 && Math.random() > 0.7) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const length = 50 + bassIntensity * 200;
+                    
+                    lightStreaks.push({
+                        x: light.x,
+                        y: light.y,
+                        angle: angle,
+                        length: length,
+                        progress: 0,
+                        speed: 0.05 + bassIntensity * 0.1,
+                        color: light.color,
+                        opacity: 0.8
+                    });
+                }
+            }
+            
+            // Draw and update light streaks
+            for (let i = 0; i < lightStreaks.length; i++) {
+                const streak = lightStreaks[i];
+                
+                streak.progress += streak.speed;
+                
+                if (streak.progress >= 1) {
+                    lightStreaks.splice(i, 1);
+                    i--;
+                    continue;
+                }
+                
+                const currentLength = streak.length * streak.progress;
+                const endX = streak.x + Math.cos(streak.angle) * currentLength;
+                const endY = streak.y + Math.sin(streak.angle) * currentLength;
+                
+                // Draw streak
+                ctx.beginPath();
+                ctx.moveTo(streak.x, streak.y);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = streak.color.replace(')', `, ${streak.opacity * (1 - streak.progress)})`);
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
                 ctx.stroke();
                 
                 // Glow effect
-                ctx.shadowColor = ring.color;
+                ctx.shadowColor = streak.color;
                 ctx.shadowBlur = 20;
                 ctx.stroke();
                 ctx.shadowBlur = 0;
+            }
+            
+            // Limit streaks
+            if (lightStreaks.length > 20) {
+                lightStreaks.splice(0, lightStreaks.length - 15);
             }
         }
         
@@ -1058,13 +1453,14 @@
             visualizerType = type;
             
             // Update button states
-            [vizBallBtn, vizWavesBtn, vizPulseBtn, vizOffBtn].forEach(btn => {
+            [vizBallBtn, vizWavesBtn, vizPulseBtn, vizParticlesBtn, vizLightsBtn, vizOffBtn].forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // Clear visualizer arrays when switching
+            // Reset visualizer arrays
             waveRipples = [];
             pulseRings = [];
+            lightStreaks = [];
             
             switch(type) {
                 case 'ball':
@@ -1076,12 +1472,31 @@
                 case 'pulse':
                     vizPulseBtn.classList.add('active');
                     break;
+                case 'particles':
+                    vizParticlesBtn.classList.add('active');
+                    break;
+                case 'lights':
+                    vizLightsBtn.classList.add('active');
+                    break;
                 case 'off':
                     vizOffBtn.classList.add('active');
                     break;
             }
         }
         
+        // Update settings from sliders
+        function updateSettings() {
+            sensitivity = sensitivitySlider.value / 100;
+            particleDensity = particleSlider.value / 100;
+            brightness = brightnessSlider.value / 100;
+            
+            // Reinitialize particles if density changed
+            if (particleDensity !== (particleSlider.value / 100)) {
+                initParticles();
+            }
+        }
+        
+        // [REST OF THE PLAYER FUNCTIONS REMAIN THE SAME AS BEFORE...]
         // Initialize player with first track
         function loadTrack(index) {
             const track = musicFiles[index];
@@ -1113,6 +1528,7 @@
             // Reset visualizer arrays
             waveRipples = [];
             pulseRings = [];
+            lightStreaks = [];
         }
         
         // Play/Pause functionality
@@ -1309,7 +1725,14 @@
             vizBallBtn.addEventListener('click', () => setVisualizer('ball'));
             vizWavesBtn.addEventListener('click', () => setVisualizer('waves'));
             vizPulseBtn.addEventListener('click', () => setVisualizer('pulse'));
+            vizParticlesBtn.addEventListener('click', () => setVisualizer('particles'));
+            vizLightsBtn.addEventListener('click', () => setVisualizer('lights'));
             vizOffBtn.addEventListener('click', () => setVisualizer('off'));
+            
+            // Settings sliders
+            sensitivitySlider.addEventListener('input', updateSettings);
+            particleSlider.addEventListener('input', updateSettings);
+            brightnessSlider.addEventListener('input', updateSettings);
             
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
